@@ -107,7 +107,6 @@ def is_good_enough(H, training_points, classifier_to_misclassified,
 
     counter = 0
     for p in training_points:
-        classified_correctly = False
         summer = 0
         tie = False
         for (classifier, voting_power) in H:

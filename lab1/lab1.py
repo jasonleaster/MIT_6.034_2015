@@ -3,20 +3,20 @@ from data import *
 
 #### Part 1: Multiple Choice #########################################
 
-ANSWER_1 = 'your answer here'
+ANSWER_1 = '2'
 
-ANSWER_2 = 'your answer here'
+ANSWER_2 = 'no'
 
-ANSWER_3 = 'your answer here'
+ANSWER_3 = '2'
 
-ANSWER_4 = 'your answer here'
+ANSWER_4 = '1'
 
-ANSWER_5 = 'your answer here'
+ANSWER_5 = '0'
 
 
 #### Part 2: Transitive Rule #########################################
 
-transitive_rule = IF( AND(), THEN() )
+transitive_rule = IF( AND('(?x) beats (?y)', '(?y) beats (?z)'), THEN('(?x) beats (?z)') )
 
 # You can test your rule by uncommenting these print statements:
 #print forward_chain([transitive_rule], abc_data)
@@ -28,16 +28,38 @@ transitive_rule = IF( AND(), THEN() )
 
 # Define your rules here:
 
+self = IF('person (?x)', THEN('self (?x) (?x)'))
+
+sibling = IF( AND(
+                  'parent (?x) (?y)', 
+                  'parent (?x) (?z)',
+                  NOT('self (?y) (?z)'),
+                 ),
+            THEN('sibling (?y) (?z)') )
+
+child = IF('parent (?x) (?y)', THEN('child (?y) (?x)') )
+
+cousin = IF( AND(
+                'parent (?a) (?x)', 
+                'parent (?b) (?y)', 
+                'sibling (?a) (?b)', 
+                 NOT('self (?a) (?b)')),
+                 # don't add NOT('self (?x) (?y)')
+            THEN('cousin (?x) (?y)') )
+
+grandchild = IF( AND('parent (?x) (?y)', 'parent (?y) (?z)'), THEN('grandchild (?z) (?x)') )
+
+grandparent = IF( AND('parent (?x) (?y)', 'parent (?y) (?z)'), THEN('grandparent (?x) (?z)') )
 
 
 # Add your rules to this list:
-family_rules = [ ]
+family_rules = [self, sibling, child, cousin, grandchild, grandparent]
 
 # Uncomment this to test your data on the Simpsons family:
 #print forward_chain(family_rules, simpsons_data, verbose=False)
 
 # These smaller datasets might be helpful for debugging:
-#print forward_chain(family_rules, sibling_test_data, verbose=True)
+# print forward_chain(family_rules, sibling_test_data, verbose=True)
 #print forward_chain(family_rules, grandparent_test_data, verbose=True)
 
 # The following should generate 14 cousin relationships, representing 7 pairs
@@ -65,12 +87,12 @@ def backchain_to_goal_tree(rules, hypothesis):
 
 #### Survey #########################################
 
-NAME = None
-COLLABORATORS = None
-HOW_MANY_HOURS_THIS_LAB_TOOK = None
-WHAT_I_FOUND_INTERESTING = None
-WHAT_I_FOUND_BORING = None
-SUGGESTIONS = None
+NAME = "EOF"
+COLLABORATORS = "None"
+HOW_MANY_HOURS_THIS_LAB_TOOK = 10
+WHAT_I_FOUND_INTERESTING = "Everything in 6.034"
+WHAT_I_FOUND_BORING = "Nothing"
+SUGGESTIONS = "More labs"
 
 
 ###########################################################

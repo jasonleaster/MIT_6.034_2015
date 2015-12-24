@@ -257,7 +257,10 @@ class RuleExpression(list):
         return condition_vars
 
     def test_matches(self, rules):
+        print "hello world, set a break point"
         raise NotImplementedError
+        
+        #new_key = populate(self[0], )
 
     def __eq__(self, other):
         return type(self) == type(other) and list.__eq__(self, other)

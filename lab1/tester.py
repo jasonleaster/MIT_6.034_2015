@@ -8,14 +8,14 @@ try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
-
+"""
 try:
     from key import USERNAME as username, PASSWORD as password, XMLRPC_URL as server_url
 except ImportError:
     print "Error: Can't find your 'key.py' file!  Please go download one from"
     print "<https://6.034.scripts.mit.edu:444/fall12/tester/key.py>"
     sys.exit(1)
-
+"""
 
 def test_summary(dispindex, ntests):
     return "Test %d/%d" % (dispindex, ntests)

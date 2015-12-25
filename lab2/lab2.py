@@ -92,7 +92,7 @@ def dfs(graph, startNode, goalNode):
             return path
 
         neighbors = graph.get_neighbors(node)
-        neighbors.sort()
+        neighbors.sort() #sort by alphabete
 
         i = 0
         while i < len(neighbors):
@@ -155,32 +155,306 @@ def bfs(graph, startNode, goalNode):
 
 
 def hill_climbing(graph, startNode, goalNode):
-    raise NotImplementedError
+    visited = []
+    S = [startNode]
+    path = []
 
+    while len(S) != 0:
+        node = S.pop(0)
+        path.append(node)
+        visited.append(node)
+
+        if node == goalNode:
+            return path
+
+        neighbors = graph.get_neighbors(node)
+
+        i = 0
+        while i < len(neighbors):
+            if neighbors[i] in visited:
+                neighbors.remove(neighbors[i])
+            else:
+                i += 1
+        #-------------- different with DFS ------------------
+        neighbor = sort_by_heuristic(graph, goalNode, neighbors)
+        #----------------------------------------------------
+
+        if len(neighbors) == 0:
+            path.pop()
+
+            travelledAll = True
+            while travelledAll == True:
+                if len(path) != 0:
+                    nei = graph.get_neighbors(path[-1])
+                else:
+                    return None
+
+                for i in nei:
+                    if i not in visited:
+                        travelledAll = False
+                        break
+
+                if travelledAll == True:
+                    path.pop()
+        else:
+            S = neighbors + S
+    return None
+
+def sort_path_by_heuristic(graph, paths, goalNode):
+    for i in range(len(paths)):
+        A = graph.get_heuristic_value(paths[i][-1], goalNode)
+        for j in range(i+1, len(paths)):
+            B = graph.get_heuristic_value(paths[j][-1], goalNode)
+            if A > B:
+                A, B = B, A
+                paths[i], paths[j] = paths[j], paths[i]
+
+    return paths
+        
 
 def best_first(graph, startNode, goalNode):
-    raise NotImplementedError
+    visited = []
+    S = [[startNode]]
+    path = None
+
+    while len(S) != 0:
+        path = S.pop(0)
+        node = path[-1]
+
+        visited.append(node)
+
+        if node == goalNode:
+            return path
+
+        neighbors = graph.get_neighbors(node)
+
+        i = 0
+        while i < len(neighbors):
+            if neighbors[i] in visited:
+                neighbors.remove(neighbors[i])
+            else:
+                i += 1
+
+        new_paths = []
+        for i in neighbors:
+            new_paths.append(path + [i])
+
+        if len(neighbors) == 0:
+            path.pop()
+
+            travelledAll = True
+            while travelledAll == True:
+                if len(path) != 0:
+                    nei = graph.get_neighbors(path[-1])
+                else:
+                    return None
+
+                for i in nei:
+                    if i not in visited:
+                        travelledAll = False
+                        break
+
+                if travelledAll == True:
+                    path.pop()
+        else:
+            S = sort_path_by_heuristic(graph, new_paths + S, goalNode)
+    return None
 
 
 def beam(graph, startNode, goalNode, beam_width):
-    raise NotImplementedError
 
+    visited = []
+    Q = [[startNode] ]
+    path = []
+
+    while len(Q) != 0:
+        path = Q.pop(0)
+        node = path[-1]
+        visited.append(node)
+
+        if node == goalNode:
+            return path
+
+        neighbors = graph.get_neighbors(node)
+
+        i = 0
+        while i < len(neighbors):
+            if neighbors[i] in visited:
+                neighbors.remove(neighbors[i])
+            else:
+                i += 1
+
+        new_paths = []
+        for i in neighbors:
+            new_paths.append(path + [i])
+
+        sorted_path = sort_path_by_heuristic(graph, new_paths, goalNode)
+        Q += sorted_path
+
+        SAME_LEVEL = True
+        for i in range(len(Q)-1):
+            if len(Q[i]) != len(Q[i+1]):
+                SAME_LEVEL = False
+                break
+
+        if SAME_LEVEL == True:
+            Q = sort_path_by_heuristic(graph, Q, goalNode)
+            Q = Q[0:beam_width]
+
+    return None
+
+def sort_by_length(graph, paths, goalNode):
+    for i in range(len(paths)):
+        A = path_length(graph, paths[i])
+        for j in range(i + 1, len(paths)):
+            B = path_length(graph, paths[j])
+            if A > B:
+                A, B = B, A
+                paths[i], paths[j] = paths[j], paths[i]
+    return paths
 
 def branch_and_bound(graph, startNode, goalNode):
-    raise NotImplementedError
+    visited = []
+    S = [[startNode]]
+    path = None
 
+    while len(S) != 0:
+        path = S.pop(0)
+        node = path[-1]
+
+        visited.append(node)
+
+        if node == goalNode:
+            return path
+
+        neighbors = graph.get_neighbors(node)
+
+        i = 0
+        while i < len(neighbors):
+            if neighbors[i] in visited:
+                neighbors.remove(neighbors[i])
+            else:
+                i += 1
+
+        new_paths = []
+        for i in neighbors:
+            new_paths.append(path + [i])
+
+        S = sort_by_length(graph, new_paths + S, goalNode)
+
+    return None
+
+def sort_by_length_and_heuristic(graph, paths, goalNode):
+    for i in range(len(paths)):
+        A = path_length(graph, paths[i])
+        A += graph.get_heuristic_value(paths[i][-1], goalNode)
+        for j in range(i + 1, len(paths)):
+            B = path_length(graph, paths[j])
+            B += graph.get_heuristic_value(paths[j][-1], goalNode)
+            if A > B:
+                A, B = B, A
+                paths[i], paths[j] = paths[j], paths[i]
+    return paths
 
 def branch_and_bound_with_heuristic(graph, startNode, goalNode):
-    raise NotImplementedError
+
+    visited = []
+    S = [[startNode]]
+    path = None
+
+    while len(S) != 0:
+        path = S.pop(0)
+        node = path[-1]
+
+        visited.append(node)
+
+        if node == goalNode:
+            return path
+
+        neighbors = graph.get_neighbors(node)
+
+        i = 0
+        while i < len(neighbors):
+            if neighbors[i] in visited:
+                neighbors.remove(neighbors[i])
+            else:
+                i += 1
+
+        new_paths = []
+        for i in neighbors:
+            new_paths.append(path + [i])
+
+        new_paths = sort_by_length(graph, new_paths + S, goalNode)
+        S = new_paths
+
+    return None
 
 
 def branch_and_bound_with_extended_set(graph, startNode, goalNode):
-    raise NotImplementedError
+    visited = []
+    S = [[startNode]]
+    path = None
+
+    while len(S) != 0:
+        path = S.pop(0)
+        node = path[-1]
+
+        visited.append(node)
+
+        if node == goalNode:
+            return path
+
+        neighbors = graph.get_neighbors(node)
+
+        i = 0
+        while i < len(neighbors):
+            if neighbors[i] in visited:
+                neighbors.remove(neighbors[i])
+            else:
+                i += 1
+
+        new_paths = []
+        for i in neighbors:
+            new_paths.append(path + [i])
+
+        new_paths = sort_by_length(graph, new_paths + S, goalNode)
+        S = new_paths
+
+    return None
 
 
 def a_star(graph, startNode, goalNode):
-    raise NotImplementedError
 
+    visited = []
+    S = [[startNode]]
+    path = None
+
+    while len(S) != 0:
+        path = S.pop(0)
+        node = path[-1]
+
+        visited.append(node)
+
+        if node == goalNode:
+            return path
+
+        neighbors = graph.get_neighbors(node)
+
+        i = 0
+        while i < len(neighbors):
+            if neighbors[i] in visited:
+                neighbors.remove(neighbors[i])
+            else:
+                i += 1
+
+        new_paths = []
+        for i in neighbors:
+            new_paths.append(path + [i])
+
+        new_paths = sort_by_length_and_heuristic(graph, new_paths + S, goalNode)
+        S = new_paths
+
+    return None
 
 #### PART 3: Generic Search #######################################
 
@@ -194,11 +468,11 @@ def a_star(graph, startNode, goalNode):
 
 
 
-generic_dfs = [None, None, None, None]
+generic_dfs = [do_nothing_fn, True, do_nothing_fn, False]
 
-generic_bfs = [None, None, None, None]
+generic_bfs = [do_nothing_fn, False, do_nothing_fn , False]
 
-generic_hill_climbing = [None, None, None, None]
+generic_hill_climbing = [do_nothing_fn, True, do_nothing_fn, False]
 
 generic_best_first = [None, None, None, None]
 

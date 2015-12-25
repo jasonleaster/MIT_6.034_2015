@@ -197,6 +197,6 @@ def adaboost(training_points, classifier_to_misclassified,
 NAME = "EOF"
 COLLABORATORS = "None"
 HOW_MANY_HOURS_THIS_LAB_TOOK = 3
-WHAT_I_FOUND_INTERESTING = "Everthing in 6.034"
+WHAT_I_FOUND_INTERESTING = "Everything in 6.034"
 WHAT_I_FOUND_BORING = "Nothing"
 SUGGESTIONS = "Move interesting lab"

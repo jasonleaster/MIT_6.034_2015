@@ -78,53 +78,79 @@ generic_search = make_generic_search(extensions, has_loops)  # DO NOT CHANGE
 # then complete Part 2 using your answers from Part 3.
 
 def dfs(graph, startNode, goalNode):
+
     visited = []
     S = [startNode]
     path = []
+
     while len(S) != 0:
         node = S.pop(0)
         path.append(node)
         visited.append(node)
-        if graph.get_edge(node, goalNode):
-            return path + [goalNode]
+
+        if node == goalNode:
+            return path
 
         neighbors = graph.get_neighbors(node)
-        i = 0
+        neighbors.sort()
 
+        i = 0
         while i < len(neighbors):
-            if neighbors[i] in S or neighbors[i] in visited:
-            #if neighbors[i] in visited:
+            if neighbors[i] in visited:
                 neighbors.remove(neighbors[i])
             else:
                 i += 1
 
         if len(neighbors) == 0:
             path.pop()
+
+            travelledAll = True
+            while travelledAll == True:
+                if len(path) != 0:
+                    nei = graph.get_neighbors(path[-1])
+                else:
+                    return None
+
+                for i in nei:
+                    if i not in visited:
+                        travelledAll = False
+                        break
+
+                if travelledAll == True:
+                    path.pop()
         else:
             neighbors.sort()
             S = neighbors + S
     return None
 
 def bfs(graph, startNode, goalNode):
-    Q = [startNode]
-    visited = []
+
+    visited = [startNode]
+    Q = [[startNode] ]
     path = []
+
     while len(Q) != 0:
-        node = Q.pop(0)
-        path.append(node)
-        if node in visited:
-            path.pop()
-        else:
-            visited.append(node)
-            if graph.get_edge(node, goalNode):
-                return path
-            neighbors = graph.get_neighbors(node)
-            for n in neighbors:
-                if not(n in visited):
-                    Q.append(n)
+        path = Q.pop(0)
+        node = path[-1]
+
+        if node == goalNode:
+            return path
+
+        neighbors = graph.get_neighbors(node)
+        neighbors.sort()
+
+        i = 0
+        while i < len(neighbors):
+            if neighbors[i] in visited:
+                neighbors.remove(neighbors[i])
+            else:
+                i += 1
+
+        for i in neighbors:
+            visited.append(i)
+            Q.append(path + [i])
 
     return None
-            
 
 
 
@@ -273,12 +299,12 @@ heuristic_4['G']['G'] = h4_G
 
 #### SURVEY ###################################################
 
-NAME = None
-COLLABORATORS = None
-HOW_MANY_HOURS_THIS_LAB_TOOK = None
-WHAT_I_FOUND_INTERESTING = None
-WHAT_I_FOUND_BORING = None
-SUGGESTIONS = None
+NAME = "EOF"
+COLLABORATORS = "None"
+HOW_MANY_HOURS_THIS_LAB_TOOK = 24
+WHAT_I_FOUND_INTERESTING = "Everything"
+WHAT_I_FOUND_BORING = "Nothing"
+SUGGESTIONS = "Nothing"
 
 
 ###########################################################

@@ -79,7 +79,46 @@ black_family_cousins = [
 from production import PASS, FAIL, match, populate, simplify, variables
 
 def backchain_to_goal_tree(rules, hypothesis):
-    raise NotImplementedError
+    ret = hypothesis
+
+    for rule in rules:
+        consequent = rule.consequent()
+
+        for conse in consequent:
+            bindings = match(conse, hypothesis)
+            if bindings != None:
+                antecedent = rule.antecedent()
+
+                if is_leaf_condition(antecedent):
+                    condition = antecedent.__class__
+
+                    tmp = []
+                    for ante in antecedent:
+                        new_hypothesis = populate(ante, bindings)
+                        ans = backchain_to_goal_tree(rules, new_hypothesis)
+                        tmp.append(ans)
+
+                    ret = OR(ret, condition(tmp))
+                else:
+                    new_hypothesis = populate(antecedent, bindings)
+                    tmp = backchain_to_goal_tree(rules, new_hypothesis)
+                    ret = OR(ret, tmp)
+
+    return simplify(ret)
+
+"""
+This is a helper function which I writed 
+for @backchain_to_goal_tree
+
+If antecedent condition construct by AND 
+or OR (which based on list), this antecedent node is 
+not leaf, otherwise, it's a leaf.
+"""
+def is_leaf_condition(antecedent):
+    if isinstance(antecedent, list):
+        return True
+    else:
+        return False
 
 # Uncomment this to run your backward chainer:
 #print backchain_to_goal_tree(zookeeper_rules, 'opus is a penguin')
